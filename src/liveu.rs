@@ -84,6 +84,7 @@ pub struct Battery {
 pub struct Video {
     pub resolution: Option<String>,
     pub bitrate: Option<u32>,
+    pub frame_rate: Option<f64>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
