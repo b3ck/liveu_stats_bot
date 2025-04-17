@@ -1,9 +1,13 @@
 name: Release
 
 on:
+  # Allow manual runs from the Actions UI
+  workflow_dispatch:
+
+  # Still run on tag pushes
   push:
     tags:
-      - v[0-9]+.*
+      - 'v[0-9]+.*'
 
 jobs:
   create-release:
@@ -15,6 +19,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
+    needs: create-release
     strategy:
       matrix:
         os:
