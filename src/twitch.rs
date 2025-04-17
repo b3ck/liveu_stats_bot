@@ -158,6 +158,7 @@ impl Twitch {
         match command {
             Command::Stats => self.generate_liveu_modems_message().await,
             Command::Battery => self.generate_liveu_battery_message().await,
+            Command::Fps     => self.generate_liveu_fps_message().await,
             _ => unreachable!(),
         }
     }
@@ -182,6 +183,7 @@ impl Twitch {
         let config::Commands {
             stats,
             battery,
+            fps,
             start,
             stop,
             restart,
@@ -190,6 +192,10 @@ impl Twitch {
             ..
         } = &self.config.commands;
 
+        if fps.contains(&command) {
+            return Command::Fps;
+        }
+        
         if stats.contains(&command) {
             return Command::Stats;
         }
@@ -221,6 +227,15 @@ impl Twitch {
         Command::Unknown
     }
 
+    async fn generate_liveu_fps_message(&self) -> Result<String, Error> {
+        let video = self.liveu.get_video(&self.liveu_boss_id).await?;
+        if let Some(fps) = video.frame_rate {
+            Ok(format!("Current FPS: {:.1} fps", fps))
+        } else {
+            Ok("FPS data not available".into())
+      }
+    }
+    
     async fn generate_liveu_modems_message(&self) -> Result<String, Error> {
         let interfaces: Vec<liveu::Interface> = self
             .liveu
@@ -463,6 +478,7 @@ impl Twitch {
 enum Command {
     Stats,
     Battery,
+    Fps,
     Start,
     Stop,
     Restart,
