@@ -43,6 +43,7 @@ pub struct Commands {
     pub cooldown: u16,
     pub stats: Vec<String>,
     pub battery: Vec<String>,
+    pub fps:     Vec<String>,
     pub start: String,
     pub stop: String,
     pub restart: String,
@@ -182,6 +183,9 @@ impl Config {
                 "!battery".to_string(),
                 "!liveubattery".to_string(),
                 "!lub".to_string(),
+            ],
+            fps: vec![
+                "!fps".to_string(),
             ],
             start: "!lustart".to_string(),
             stop: "!lustop".to_string(),
