@@ -3,8 +3,8 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'The tag name to release (e.g. v1.2.3)'
+      ref:
+        description: 'Git ref to release from (e.g. `refs/tags/v1.2.3`)'
         required: true
 
 jobs:
@@ -17,18 +17,18 @@ jobs:
       - name: Create GitHub Release
         uses: taiki-e/create-gh-release-action@v1
         with:
-          tag: ${{ github.event.inputs.tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # must be a full ref (refs/tags/… or refs/heads/…)
+          ref: ${{ github.event.inputs.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # optional overrides:
+          draft: false
+          allow-missing-changelog: true
 
   upload-assets:
     needs: create-release
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
