@@ -1,20 +1,23 @@
 name: Release
 
 on:
-  # Allow manual runs from the Actions UI
   workflow_dispatch:
-
-  # Still run on tag pushes
-  push:
-    tags:
-      - 'v[0-9]+.*'
+    inputs:
+      tag:
+        description: 'The tag name to release (e.g. v1.2.3)'
+        required: true
 
 jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: taiki-e/create-gh-release-action@v1
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Create GitHub Release
+        uses: taiki-e/create-gh-release-action@v1
+        with:
+          tag: ${{ github.event.inputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -28,8 +31,11 @@ jobs:
           - windows-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: taiki-e/upload-rust-binary-action@v1
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Build & upload binaries
+        uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: liveu_stats_bot
           tar: unix
